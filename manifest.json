@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Flavortown Cookie Goal Calculator",
+  "version": "0.1.0",
+  "description": "Track your Hack Club cookies and set savings goals for Flavortown store items",
+
+  "permissions": ["storage"],
+
+  "host_permissions": ["https://flavortown.hackclub.com/*"],
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "options_page": "options.html"
+}

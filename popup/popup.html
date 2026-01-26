@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flavortown Cookie Calculator</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="container-header">
+      <h1>🍪 | Flavortown Cookie Calculator</h3>
+    </div>
+
+    <div class="container-body">
+
+      <div class="visible" id="startContainer">
+        <h1>Welcome to Flavortown Cookie Calculator!</h1>
+        <br>
+        
+        <div class="card api-key-card">
+          <h1>Enter your API key to get started</h1>
+          <input type="text" id="apiKeyField" placeholder="Enter API Key here">
+          <button id="saveApiKeyButton">Save API Key</button>
+          <a href="https://flavortown.hackclub.com/kitchen">Get your API key →</a>
+        </div>
+
+      </div>
+
+      <div class="hidden" id="mainContainer">
+
+        <div id="stats">
+          <div class="card">
+            Cookies <br> <span id="cookieCount"></span>
+          </div>
+
+          <div class="card">
+            Username <br> <span id="username"></span>
+          </div>
+        </div>
+
+        <div id="goalSection">
+          <h1>Add your goal</h1>
+          <input type="text" id="cookieAmount" placeholder="Cookie Amount">
+          <input type="text" id="goalName" placeholder="Goal Name">
+          <button id="addGoalButton" class="button">Add Goal</button>
+        </div>
+
+        <div id="goalsList">
+          <h1>Your Goals</h1>
+          <div id="goalsContainer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+
+</html>
