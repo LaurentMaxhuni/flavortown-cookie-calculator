@@ -63,23 +63,6 @@ Watch your progress with visual indicators showing how close you are to each goa
 - **Delete Goals**: Click the × button to remove a goal
 - **Refresh Data**: Click ↻ to update your cookie balance
 
-## For Developers
-
-### File Structure
-
-```
-flavortown-cookie-calculator/
-├── manifest.json          # Extension configuration
-├── popup.html             # Main popup interface
-├── popup.css              # Styling
-├── popup.js               # Core functionality
-├── options.html           # Settings page
-├── icons/                 # Extension icons
-│   ├── icon16.png
-│   ├── icon48.png
-│   └── icon128.png
-└── README.md              # This file
-```
 
 ### Tech Stack
 

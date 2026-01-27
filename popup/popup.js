@@ -15,7 +15,20 @@ const goalsList = document.getElementById("goalsList");
 // Flavortown API base URL
 const API_BASE_URL = "https://flavortown.hackclub.com/api/v1";
 
-// Function to load the API key from storage
+// Function to save the API key to storage
+
+function saveApiKey() {
+  const apiKey = apiKeyInput.value;
+  chrome.storage.sync.set({ apiKey: apiKey }, () => {
+    showMainContainer(apiKey);
+  });
+}
+
+// Event listener for the save API key button
+saveApiKeyButton.addEventListener("click", saveApiKey);
+
+// Function to load the API key if it exists
+
 function loadApiKey() {
   chrome.storage.sync.get(["apiKey"], (result) => {
     if (result.apiKey) {
@@ -25,115 +38,64 @@ function loadApiKey() {
   });
 }
 
-// Function to save the API key to storage
-function saveApiKey() {
-  const apiKey = apiKeyInput.value;
-  chrome.storage.sync.set({ apiKey: apiKey }, () => {
-    showMainContainer();
-  });
+// Function to showMainContainer and hide startContainer
+
+async function showMainContainer(apiKey) {
+  startContainer.classList.remove("visible");
+  startContainer.classList.add("hidden");
+
+  mainContainer.classList.remove("hidden");
+  mainContainer.classList.add("visible");
+
+  await fetchUserData(apiKey);
 }
 
 // Function to call API and fetch user data
+
 async function fetchUserData(apiKey) {
   return await fetch(`${API_BASE_URL}/users/me`, {
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
   })
-    .then((response) => {
-      if (!response.ok) {
+    .then((res) => {
+      if (!res.ok) {
         throw new Error("Failed to fetch user data");
       }
-      return response.json();
+      return res.json();
     })
     .then((data) => {
-      return saveUserData(data);
+      const res = loadUserData();
+      if (res) return saveUserData(data);
+      return loadUserData();
     });
 }
 
-// Function to save user data to storage
-function saveUserData(data) {
-  return new Promise((resolve) => {
-    chrome.storage.sync.set({
-      cookieCount: data.cookies,
-      username: data.display_name,
-    }, resolve);
-  });
-}
-
-// Function to call API and get store items
-function fetchStoreItems(apiKey) {
-  return fetch(`${API_BASE_URL}/store`, {
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  }).then((response) => {
-    if (!response.ok) {
-      throw new Error("Failed to fetch store items");
-    }
-    return response.json();
-  });
-}
-
-// Function to show the main container and hide the start container
-async function showMainContainer(apiKey) {
-  startContainer.style.display = "none";
-  mainContainer.style.display = "block";
-  await fetchUserData(apiKey);
-  await fetchStoreItems(apiKey);
-  loadUserData();
-  loadGoals();
-}
-
-// Event listener for the save API key button
-saveApiKeyButton.addEventListener("click", saveApiKey);
-
-// Load the API key when the popup is opened
-loadApiKey();
-
 // Function to load user data (cookie count and username)
+
 function loadUserData() {
   chrome.storage.sync.get(["cookieCount", "username"], (result) => {
     cookieCount.textContent = result.cookieCount || 0;
     username.textContent = result.username || "Guest";
   });
+  return Promise.resolve();
 }
 
-// Function to load goals from storage and display them
-function loadGoals() {
-  chrome.storage.sync.get(["goals"], (result) => {
-    const goals = result.goals || [];
-    goalsList.innerHTML = "";
-    goals.forEach((goal, index) => {
-      const li = document.createElement("li");
-      li.textContent = `${goal.name}: ${goal.amount} cookies`;
-      goalsList.appendChild(li);
-    });
-  });
+// Save user data to storage
+
+function saveUserData(data) {
+  if (!data) return;
+  chrome.storage.sync.set(
+    {
+      cookieCount: data.cookies,
+      username: data.display_name,
+    },
+    () => {
+      loadUserData();
+    }
+  );
 }
 
-// Event listener for the add goal button
-addGoalButton.addEventListener("click", () => {
-  const name = goalName.value;
-  const amount = parseInt(cookieAmount.value, 10);
-  if (name && !isNaN(amount)) {
-    chrome.storage.sync.get(["goals"], (result) => {
-      const goals = result.goals || [];
-      goals.push({ name, amount });
-      chrome.storage.sync.set({ goals: goals }, () => {
-        loadGoals();
-        goalName.value = "";
-        cookieAmount.value = "";
-      });
-    });
-  } else {
-    alert("Please enter a valid goal name and cookie amount.");
-  }
-});
+// Function to open storeContainer and hide mainContainer
 
-// Initial load of user data and goals if API key is already set
-chrome.storage.sync.get(["apiKey"], (result) => {
-  if (result.apiKey) {
-    showMainContainer(result.apiKey);
-  }
-});
+loadApiKey();
