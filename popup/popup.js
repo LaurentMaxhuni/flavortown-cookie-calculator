@@ -11,6 +11,7 @@ const cookieAmount = document.getElementById("cookieAmount");
 const goalName = document.getElementById("goalName");
 const addGoalButton = document.getElementById("addGoalButton");
 const goalsList = document.getElementById("goalsList");
+const goalsContainer = document.getElementById("goalsContainer");
 
 // Flavortown API base URL
 const API_BASE_URL = "https://flavortown.hackclub.com/api/v1";
@@ -41,11 +42,12 @@ function loadApiKey() {
 // Function to showMainContainer and hide startContainer
 
 async function showMainContainer(apiKey) {
-  startContainer.classList.remove("visible");
   startContainer.classList.add("hidden");
-
-  mainContainer.classList.remove("hidden");
-  mainContainer.classList.add("visible");
+  startContainer.classList.remove("visible");
+  if (apiKey) {
+    mainContainer.classList.remove("hidden");
+    mainContainer.classList.add("visible");
+  }
 
   await fetchUserData(apiKey);
 }
@@ -92,10 +94,100 @@ function saveUserData(data) {
     },
     () => {
       loadUserData();
-    }
+    },
   );
+}
+
+// Function render goal to list
+function renderGoalToList(goal, userAmountOverride) {
+  const goalItem = document.createElement("div");
+  const userAmount =
+    typeof userAmountOverride === "number"
+      ? userAmountOverride
+      : Number(cookieCount.textContent.trim()) || 0;
+  const goalAmount = Number(goal.amount) || 0;
+  const progressPercent =
+    goalAmount > 0 ? Math.min(100, (userAmount / goalAmount) * 100) : 0;
+  goalItem.className = "goal padding-medium card";
+  goalItem.innerHTML = `
+    <div class="goal-header">
+      <div class="goal-info">
+        <span class="goal-name">${goal.name}</span> -
+        <span class="goal-amount">${goal.amount} Cookies</span>
+      </div>
+      <button class="delete-goal-button">x</button>
+    </div>
+    <div class="progress-container">
+      <span class="goal-progress">${userAmount}/${goal.amount}</span>
+      <div class="progress-bar">
+        <div class="progress-bar-filled" style="width: ${progressPercent}%;"></div>
+      </div>
+    </div>
+  `;
+  goalsContainer.appendChild(goalItem);
+
+  // Delete button function
+
+  const deleteButton = goalItem.querySelector(".delete-goal-button");
+  deleteButton.addEventListener("click", () => {
+    goalsContainer.removeChild(goalItem);
+    removeGoalsFromStorage();
+  });
+}
+
+// Function to add a new to goal to goal container
+const addGoalButtonClick = addGoalButton.addEventListener("click", addGoal);
+async function addGoal() {
+  const name = goalName.value.trim();
+  const amount = cookieAmount.value.trim();
+  if (!name || !amount || isNaN(amount) || amount <= 0) {
+    alert("Please enter a valid goal name and amount.");
+    return;
+  }
+
+  const goal = {
+    name,
+    amount,
+  };
+
+  renderGoalToList(goal, Number(cookieCount.textContent.trim()) || 0);
+
+  // Clear input fields
+  goalName.value = "";
+  cookieAmount.value = "";
+
+  // Optionally, save goals to storage here
+  saveGoalsToStorage();
+}
+
+// Function to save goals to storage
+function saveGoalsToStorage() {
+  const goals = [];
+  const goalItems = goalsContainer.getElementsByClassName("goal");
+  for (let item of goalItems) {
+    const name = item.querySelector(".goal-name").textContent;
+    const amountText = item.querySelector(".goal-amount").textContent;
+    const amount = parseInt(amountText.split(" ")[0]);
+    goals.push({ name, amount });
+  }
+  chrome.storage.sync.set({ goals: goals });
+}
+
+// Function to remove goals from storage
+function removeGoalsFromStorage() {}
+
+// Function to load goals from storage
+function loadGoalsFromStorage() {
+  chrome.storage.sync.get(["goals", "cookieCount"], (result) => {
+    const goals = result.goals || [];
+    const userAmount = Number(result.cookieCount) || 0;
+    for (let goal of goals) {
+      renderGoalToList(goal, userAmount);
+    }
+  });
 }
 
 // Function to open storeContainer and hide mainContainer
 
 loadApiKey();
+loadGoalsFromStorage();

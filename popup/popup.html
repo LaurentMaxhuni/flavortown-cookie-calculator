@@ -20,7 +20,7 @@
       <div class="visible" id="startContainer">
         <h1>Welcome to Flavortown Cookie Calculator!</h1>
         <br>
-        
+
         <div class="card api-key-card">
           <h1>Enter your API key to get started</h1>
           <input type="text" id="apiKeyField" placeholder="Enter API Key here">
@@ -33,29 +33,35 @@
       <div class="hidden" id="mainContainer">
 
         <div id="stats">
-          <div class="card">
-            Cookies <br> <span id="cookieCount"></span>
+          <div class="card cookie-count-card">
+            🍪 Cookies <br> <span id="cookieCount"></span>
           </div>
 
-          <div class="card">
-            Username <br> <span id="username"></span>
+          <div class="card username-card">
+            🧑 Username <br> <span id="username"></span>
           </div>
         </div>
 
         <div id="goalSection">
           <h1>Add your goal</h1>
-          <input type="text" id="cookieAmount" placeholder="Cookie Amount">
           <input type="text" id="goalName" placeholder="Goal Name">
+          <input type="number" id="cookieAmount" placeholder="Cookie Amount">
           <button id="addGoalButton" class="button">Add Goal</button>
         </div>
 
         <div id="goalsList">
           <h1>Your Goals</h1>
-          <div id="goalsContainer"></div>
+          <div id="goalsContainer">
+          </div>
         </div>
       </div>
+      
+      <div class="action-buttons">
+        <button id="browseStoreItems" class="browse">Browse Store Items</button>
+        <button id="refresh" class="refresh">🔄 Refresh</button>
+      </div>
 
-      <div id="storeContainer">
+      <div id="storeContainer" class="hidden">
         <div id="storeItems"></div>
       </div>
     </div>
