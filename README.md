@@ -76,7 +76,6 @@ Watch your progress with visual indicators showing how close you are to each goa
 ```
 GET /api/v1/users/me          # Get user data and cookie balance
 GET /api/v1/store             # Get all store items
-GET /api/v1/store/:id         # Get specific store item
 ```
 
 ### Key Features Implementation
@@ -120,7 +119,6 @@ chrome.storage.local.set({key: value}, callback)
 Be mindful of Flavortown API rate limits:
 - `/users/me` - 30 requests/minute
 - `/store` - 5 requests/minute
-- `/store/:id` - 30 requests/minute
 
 The extension caches data to minimize API calls.
 
@@ -217,16 +215,6 @@ MIT License - see LICENSE file for details
 - **Issues:** Open an issue on GitHub
 - **Questions:** Ask in Hack Club Slack
 - **Flavortown Help:** [Flavortown Support](https://flavortown.hackclub.com)
-
-## Changelog
-
-### v1.0.0 (Initial Release)
-- Cookie balance tracking
-- Multiple goal management
-- Store item browsing
-- Progress visualization
-- Local data storage
-- Settings page
 
 ---
 
