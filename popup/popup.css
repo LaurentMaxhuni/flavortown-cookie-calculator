@@ -1,16 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Commissioner:wght@100..900&family=DM+Serif+Display:ital@0;1&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Commissioner:wght@100..900&family=DM+Serif+Display:ital@0;1&display=swap");
 
 :root {
-
   /* Primary Colors */
-  --cookie-brown: #8B4513;
-  --cookie-tan: #D2B48C;
-  --cream: #FFFDD0;
-  --butter-yellow: #FFE5B4;
+  --cookie-brown: #8b4513;
+  --cookie-tan: #d2b48c;
+  --cream: #fffdd0;
+  --butter-yellow: #ffe5b4;
 
   /* Accent Colors */
   --mint-green: #86dc86;
-  --chocolate-dark: #3E2723;
+  --chocolate-dark: #3e2723;
 
   /* Spacing */
   --large-spacing: 20px;
@@ -24,51 +23,78 @@
   --heading-font-size: 1.5rem;
 
   /* Button Colors */
-  --button-normal: linear-gradient(135deg, var(--cookie-brown), var(--chocolate-dark));
-  --button-hover: linear-gradient(135deg, var(--chocolate-dark), var(--cookie-brown));
+  --button-normal: linear-gradient(
+    135deg,
+    var(--cookie-brown),
+    var(--chocolate-dark)
+  );
+  --button-hover: linear-gradient(
+    135deg,
+    var(--chocolate-dark),
+    var(--cookie-brown)
+  );
   --button-hover-translate: translateY(-2px);
-  --button-active: linear-gradient(135deg, var(--cookie-brown), var(--chocolate-dark));
+  --button-active: linear-gradient(
+    135deg,
+    var(--cookie-brown),
+    var(--chocolate-dark)
+  );
   --button-active-translate: translateY(0);
-  --button-disabled: #C0C0C0;
+  --button-disabled: #c0c0c0;
 
   --refresh-button-blue-background: rgba(36, 90, 217, 0.5);
   --refresh-button-blue-border: rgb(36, 90, 217);
 
-  --browse-button-red-background: rgba(219, 72, 86, 0.5);
+  --browse-button-red-background: rgba(219, 72, 86, 0.65);
   --browse-button-red-border: rgb(219, 72, 86);
 
   /* Input Fields */
-  --input-empty: #FFF8DC;
+  --input-empty: #fff8dc;
   --input-focus-border: 2px solid var(--cookie-brown);
   --input-focus-shadow: 0 0 5px var(--butter-yellow);
-  --input-filled: #F5DEB3;
-  --input-error: #FF6347;
+  --input-filled: #f5deb3;
+  --input-error: #ff6347;
 
   /* Progress Bar */
   --progress-empty: var(--cookie-tan);
   --progress-filled: var(--mint-green);
-  --progress-100: #FFD700;
+  --progress-100: #ffd700;
 
   /* Layout */
   --goals-list-max-height: 240px;
+
+  /* Scrollbars */
+  --scrollbar-track: #f1d7ad;
+  --scrollbar-thumb: #7a3d16;
+  --scrollbar-thumb-hover: #5c2a0f;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  transition: all .3s ease;
+  transition: all 0.3s ease;
 }
 
-html, body {
-  overflow: hidden;
+html,
+body {
+  overflow-y: auto;
+  overflow-x: hidden;
   width: 335px;
   font-family: var(--body-font);
   background-color: var(--cream);
   color: var(--cookie-brown);
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
-h1, h2, h3 {
+body::-webkit-scrollbar {
+  width: 12px;
+}
+
+h1,
+h2,
+h3 {
   font-family: var(--display-font);
 }
 
@@ -79,7 +105,9 @@ button {
   padding: var(--medium-spacing);
   cursor: pointer;
   border-radius: 8px;
-  transition: background 0.3s, transform 0.1s;
+  transition:
+    background 0.3s,
+    transform 0.1s;
 }
 
 button:hover {
@@ -97,24 +125,30 @@ button:disabled {
   cursor: not-allowed;
 }
 
-input[type="text"], input[type="number"] {
+input[type="text"],
+input[type="number"] {
   padding: var(--small-spacing);
   border: 1px solid #ccc;
   border-radius: 8px;
-  transition: border 0.3s, box-shadow 0.3s;
+  transition:
+    border 0.3s,
+    box-shadow 0.3s;
 }
 
-input[type="text"]:focus, input[type="number"]:focus {
+input[type="text"]:focus,
+input[type="number"]:focus {
   border: var(--input-focus-border);
   box-shadow: var(--input-focus-shadow);
   outline: none;
 }
 
-input[type="text"].filled, input[type="number"].filled {
+input[type="text"].filled,
+input[type="number"].filled {
   background-color: var(--input-filled);
 }
 
-input[type="text"].error, input[type="number"].error {
+input[type="text"].error,
+input[type="number"].error {
   border-color: var(--input-error);
 }
 
@@ -136,7 +170,9 @@ input[type="text"].error, input[type="number"].error {
   background-color: var(--progress-100);
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: var(--display-font);
   font-size: var(--heading-font-size);
   margin-bottom: var(--medium-spacing);
@@ -289,11 +325,13 @@ h1, h2, h3 {
   margin-top: var(--large-spacing);
 }
 
-.cookie-count-card, .username-card {
+.cookie-count-card,
+.username-card {
   flex: 1;
 }
 
-#cookieCount, #username {
+#cookieCount,
+#username {
   width: fit-content;
   font-size: 1.2rem;
   font-weight: bold;
@@ -306,6 +344,34 @@ h1, h2, h3 {
   gap: var(--medium-spacing);
   max-height: var(--goals-list-max-height);
   padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+#goalsContainer::-webkit-scrollbar {
+  width: 9px;
+}
+
+#goalsContainer::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 999px;
+}
+
+#goalsContainer::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid var(--scrollbar-track);
+}
+
+body::-webkit-scrollbar-thumb {
+  border-width: 3px;
+}
+
+#goalsContainer::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
 }
 
 .goal {
@@ -331,7 +397,6 @@ h1, h2, h3 {
   align-items: center;
   flex-direction: row;
 }
-
 
 .delete-goal-button {
   background: transparent;

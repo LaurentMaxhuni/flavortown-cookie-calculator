@@ -12,6 +12,10 @@ const goalName = document.getElementById("goalName");
 const addGoalButton = document.getElementById("addGoalButton");
 const goalsList = document.getElementById("goalsList");
 const goalsContainer = document.getElementById("goalsContainer");
+const refreshButton = document.getElementById("refresh");
+const browseStoreItemsButton = document.getElementById("browseStoreItems");
+const actionButtons = document.getElementById('actionButtons');
+const storeContainer = document.getElementById('storeContainer');
 
 // Flavortown API base URL
 const API_BASE_URL = "https://flavortown.hackclub.com/api/v1";
@@ -27,6 +31,7 @@ function saveApiKey() {
 
 // Event listener for the save API key button
 saveApiKeyButton.addEventListener("click", saveApiKey);
+refreshButton.addEventListener("click", refresh);
 
 // Function to load the API key if it exists
 
@@ -46,7 +51,9 @@ async function showMainContainer(apiKey) {
   startContainer.classList.remove("visible");
   if (apiKey) {
     mainContainer.classList.remove("hidden");
-    mainContainer.classList.add("visible");
+    mainContainer.classList.add("visible"); 
+    actionButtons.classList.remove("hidden");
+    storeContainer.classList.remove("hidden");
   }
 
   await fetchUserData(apiKey);
@@ -58,6 +65,7 @@ async function fetchUserData(apiKey) {
   return await fetch(`${API_BASE_URL}/users/me`, {
     headers: {
       Authorization: `Bearer ${apiKey}`,
+      'X-Flavortown-Ext-10884': true
     },
   })
     .then((res) => {
@@ -131,7 +139,7 @@ function renderGoalToList(goal, userAmountOverride) {
   const deleteButton = goalItem.querySelector(".delete-goal-button");
   deleteButton.addEventListener("click", () => {
     goalsContainer.removeChild(goalItem);
-    removeGoalsFromStorage();
+    removeGoalsFromStorage(goal);
   });
 }
 
@@ -174,7 +182,25 @@ function saveGoalsToStorage() {
 }
 
 // Function to remove goals from storage
-function removeGoalsFromStorage() {}
+function removeGoalsFromStorage(goalToRemove) {
+  if (!goalToRemove) return;
+  chrome.storage.sync.get(["goals"], (result) => {
+    const goals = result.goals || [];
+    let removed = false;
+    const updatedGoals = goals.filter((goal) => {
+      if (removed) return true;
+      const isMatch =
+        goal.name === goalToRemove.name &&
+        Number(goal.amount) === Number(goalToRemove.amount);
+      if (isMatch) {
+        removed = true;
+        return false;
+      }
+      return true;
+    });
+    chrome.storage.sync.set({ goals: updatedGoals });
+  });
+}
 
 // Function to load goals from storage
 function loadGoalsFromStorage() {
@@ -187,7 +213,53 @@ function loadGoalsFromStorage() {
   });
 }
 
-// Function to open storeContainer and hide mainContainer
+// Function to refresh
+
+function refresh() {
+  chrome.storage.sync.get(["apiKey"], (result) => {
+    if (!result.apiKey) return;
+    fetchUserData(result.apiKey).then(() => {
+      goalsContainer.innerHTML = "";
+      loadGoalsFromStorage();
+    });
+  });
+}
+
+// Function to open browseStoreItemsContainer 
+
+browseStoreItemsButton.addEventListener('click', openStoreItems);
+
+async function openStoreItems() {
+  let apiKey;
+  chrome.storage.sync.get(["apiKey"], (result) => {
+    if(result.apiKey) {
+      apiKey = result.apiKey
+    }
+  });
+  console.log(apiKey);
+  mainContainer.classList.remove('visible');
+  mainContainer.classList.add('hidden');
+  let storeItems;
+  await fetch(`${API_BASE_URL}/store`, {
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'X-Flavortown-Ext-10884': true
+    },
+  }).then(res => !res.ok ? console.error('Response is not OK') : res.json()).then(data => storeItems = data);
+
+  console.log(storeItems)
+
+  // const storeItem = document.createElement('div');
+  // storeItem.classList.add('card');
+  // storeItem.innerHTML = `${storeItems.map((item, index) => {
+  //   return `<div class=${index}>
+  //     ${item}
+  //   </div>`;
+  // })}`;
+  // storeContainer.append(storeItem);
+}
+
+// Function to open startContainer and hide mainContainer
 
 loadApiKey();
 loadGoalsFromStorage();
