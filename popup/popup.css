@@ -348,17 +348,20 @@ h3 {
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
-#goalsContainer::-webkit-scrollbar {
+#goalsContainer::-webkit-scrollbar,
+#storeContainer::-webkit-scrollbar {
   width: 9px;
 }
 
 #goalsContainer::-webkit-scrollbar-track,
+#storeContainer::-webkit-scrollbar-track,
 body::-webkit-scrollbar-track {
   background: var(--scrollbar-track);
   border-radius: 999px;
 }
 
 #goalsContainer::-webkit-scrollbar-thumb,
+#storeContainer::-webkit-scrollbar-thumb,
 body::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
   border-radius: 999px;
@@ -370,6 +373,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 #goalsContainer::-webkit-scrollbar-thumb:hover,
+#storeContainer::-webkit-scrollbar-thumb:hover,
 body::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
 }
@@ -427,4 +431,25 @@ body::-webkit-scrollbar-thumb:hover {
     background: var(--refresh-button-blue-background) !important;
     border: solid 2px var(--refresh-button-blue-border) !important;
   }
+}
+
+.store-add-goal-button {
+  background: var(--cookie-tan);
+  border: solid 2px var(--cookie-brown);
+  padding: 3px 6px;
+  margin-top: 3px;
+
+  &:hover {
+    background: var(--cookie-tan);
+  }
+}
+
+.store-card {
+  display: flex;
+  gap: 10px;
+}
+
+#storeContainer {
+  max-height: 300px;
+  overflow-y: auto;
 }

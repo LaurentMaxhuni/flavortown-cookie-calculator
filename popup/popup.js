@@ -14,8 +14,9 @@ const goalsList = document.getElementById("goalsList");
 const goalsContainer = document.getElementById("goalsContainer");
 const refreshButton = document.getElementById("refresh");
 const browseStoreItemsButton = document.getElementById("browseStoreItems");
-const actionButtons = document.getElementById('actionButtons');
-const storeContainer = document.getElementById('storeContainer');
+const actionButtons = document.getElementById("actionButtons");
+const storeContainer = document.getElementById("storeContainer");
+let apiKey;
 
 // Flavortown API base URL
 const API_BASE_URL = "https://flavortown.hackclub.com/api/v1";
@@ -39,6 +40,7 @@ function loadApiKey() {
   chrome.storage.sync.get(["apiKey"], (result) => {
     if (result.apiKey) {
       apiKeyInput.value = result.apiKey;
+      apiKey = result.apiKey;
       showMainContainer(result.apiKey);
     }
   });
@@ -51,7 +53,7 @@ async function showMainContainer(apiKey) {
   startContainer.classList.remove("visible");
   if (apiKey) {
     mainContainer.classList.remove("hidden");
-    mainContainer.classList.add("visible"); 
+    mainContainer.classList.add("visible");
     actionButtons.classList.remove("hidden");
     storeContainer.classList.remove("hidden");
   }
@@ -65,7 +67,7 @@ async function fetchUserData(apiKey) {
   return await fetch(`${API_BASE_URL}/users/me`, {
     headers: {
       Authorization: `Bearer ${apiKey}`,
-      'X-Flavortown-Ext-10884': true
+      "X-Flavortown-Ext-10884": true,
     },
   })
     .then((res) => {
@@ -225,38 +227,81 @@ function refresh() {
   });
 }
 
-// Function to open browseStoreItemsContainer 
+// Function to open browseStoreItemsContainer
 
-browseStoreItemsButton.addEventListener('click', openStoreItems);
+browseStoreItemsButton.addEventListener("click", toggleStoreItems);
+
+const STORE_BUTTON_LABEL_OPEN = "🛒 Browse Store Items";
+const STORE_BUTTON_LABEL_BACK = "⬅️ Go Back";
+
+function setStoreView(isOpen) {
+  mainContainer.classList.toggle("hidden", isOpen);
+  mainContainer.classList.toggle("visible", !isOpen);
+  storeContainer.classList.toggle("hidden", !isOpen);
+  storeContainer.classList.toggle("visible", isOpen);
+  browseStoreItemsButton.innerText = isOpen
+    ? STORE_BUTTON_LABEL_BACK
+    : STORE_BUTTON_LABEL_OPEN;
+}
+
+async function toggleStoreItems() {
+  const isOpen = storeContainer.classList.contains("visible");
+  if (isOpen) {
+    setStoreView(false);
+    return;
+  }
+  await openStoreItems();
+}
 
 async function openStoreItems() {
-  let apiKey;
-  chrome.storage.sync.get(["apiKey"], (result) => {
-    if(result.apiKey) {
-      apiKey = result.apiKey
+  setStoreView(true);
+  storeContainer.innerHTML = "";
+  const userAmount = Number(cookieCount.textContent.trim()) || 0;
+  let storeItems = [];
+  try {
+    const res = await fetch(`${API_BASE_URL}/store`, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "X-Flavortown-Ext-10884": true,
+      },
+    });
+    if (!res.ok) {
+      throw new Error("Response is not OK");
     }
+    const data = await res.json();
+    storeItems = data;
+  } catch (error) {
+    console.error("Failed to load store items", error);
+  }
+
+  console.log(storeItems);
+  storeItems.forEach((item, index) => {
+    const storeItem = document.createElement("div");
+    const goal = {
+      name: item.name,
+      amount: item.ticket_cost.base_cost,
+    };
+    storeItem.classList.add("card");
+    storeItem.innerHTML = `<div id=${index} class="store-card">
+      <div>
+        <img src=${item.image_url} style="max-width: 75px !important; height: auto !important;">
+      </div>
+      <div>
+        <h3 id="storeItemName-${index}">${item.name}</h3>
+        <p id="storeItemDesc-${index}">${item.description}</p>
+        <div id="storeItemPrice-${index}">🍪 ${item.ticket_cost.base_cost}</div>
+        <button class="store-add-goal-button">Add Goal</button>
+      </div>
+    </div>`;
+    storeContainer.append(storeItem);
+    const storeAddGoalButton = storeItem.querySelector(
+      ".store-add-goal-button",
+    );
+    storeAddGoalButton.addEventListener("click", () => {
+      renderGoalToList(goal, userAmount);
+      saveGoalsToStorage();
+    });
   });
-  console.log(apiKey);
-  mainContainer.classList.remove('visible');
-  mainContainer.classList.add('hidden');
-  let storeItems;
-  await fetch(`${API_BASE_URL}/store`, {
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'X-Flavortown-Ext-10884': true
-    },
-  }).then(res => !res.ok ? console.error('Response is not OK') : res.json()).then(data => storeItems = data);
-
-  console.log(storeItems)
-
-  // const storeItem = document.createElement('div');
-  // storeItem.classList.add('card');
-  // storeItem.innerHTML = `${storeItems.map((item, index) => {
-  //   return `<div class=${index}>
-  //     ${item}
-  //   </div>`;
-  // })}`;
-  // storeContainer.append(storeItem);
 }
 
 // Function to open startContainer and hide mainContainer
